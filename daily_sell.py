@@ -4,15 +4,19 @@ import pandas as pd
 import requests
 import yfinance as yf
 
-# 🔥 セキュリティ修正: Webhook URLは環境変数(GitHub Secrets)から取得
 DISCORD_WEBHOOK_URL = os.environ.get("DISCORD_WEBHOOK_URL")
+
+# 損切りラインの設定（例: -5.0% で損切り判定）
+STOP_LOSS_THRESHOLD = -0.05  # -5% (買値管理をしていない場合はボリバン下限ブレイク等で判定)
 
 
 def send_discord(msg):
   """Discord送信用の共通関数"""
   if DISCORD_WEBHOOK_URL:
     try:
-      res = requests.post(DISCORD_WEBHOOK_URL, json={"content": msg})
+      res = requests.post(
+          DISCORD_WEBHOOK_URL, json={"content": msg}, timeout=10
+      )
       res.raise_for_status()
     except Exception as e:
       print(f"Discord通知エラー: {e}")
@@ -41,6 +45,7 @@ def monitor_watchlist():
   print(f"監視中銘柄数: {len(watchlist)} 件")
 
   sell_notifications = []
+  stop_loss_notifications = []
   remaining_watchlist = watchlist.copy()
 
   for ticker in watchlist:
@@ -56,6 +61,7 @@ def monitor_watchlist():
       df["SMA20"] = df["Close"].rolling(20).mean()
       df["STD20"] = df["Close"].rolling(20).std()
       df["Upper_Band"] = df["SMA20"] + (df["STD20"] * 2)
+      df["Lower_Band"] = df["SMA20"] - (df["STD20"] * 2)
 
       exp1 = df["Close"].ewm(span=12, adjust=False).mean()
       exp2 = df["Close"].ewm(span=26, adjust=False).mean()
@@ -65,43 +71,53 @@ def monitor_watchlist():
 
       last_close = df["Close"].iloc[-1]
       upper_band = df["Upper_Band"].iloc[-1]
+      lower_band = df["Lower_Band"].iloc[-1]
       prev_hist = df["Hist"].iloc[-2]
       last_hist = df["Hist"].iloc[-1]
 
-      # 売り条件: 上限到達 & MACDヒストグラム下降転換
+      # 1. 🟢 利確・手仕舞い条件: 上限到達 & MACDヒストグラム下降転換
       if (last_close >= upper_band) and (last_hist < prev_hist):
-        msg = f"🔴 **【売り・手仕舞いサイン】** `{ticker}` (終値: {last_close:.1f}円)"
+        msg = f"🔴 **【利確・手仕舞いサイン】** `{ticker}` (終値: {last_close:.1f}円)"
         print(msg)
         sell_notifications.append(msg)
+        remaining_watchlist.remove(ticker)
+
+      # 2. ⚠️ 損切り条件: ボリバン下限を大幅更新(-3%以上下振れ) ＋ MACDデッドクロス/拡大
+      # (※直近で底抜けして下降トレンドが加速した場合のロスカット判定)
+      elif (last_close < lower_band * 0.97) and (last_hist < prev_hist):
+        msg = f"💀 **【損切り・ロスカットサイン】** `{ticker}` (終値: {last_close:.1f}円 / 下限割れ)"
+        print(msg)
+        stop_loss_notifications.append(msg)
         remaining_watchlist.remove(ticker)
 
     except Exception as e:
       print(f"Error monitoring {ticker}: {e}")
 
-  # 4. 通知文の作成（売り対象あり/なし両対応）
+  # 4. 通知文の作成（利確・損切り・平常時）
   watchlist_str = ", ".join([f"`{t}`" for t in watchlist])
+  all_action_notifs = sell_notifications + stop_loss_notifications
 
-  if sell_notifications:
+  if all_action_notifs:
     notification = (
-        "📊 **【本日の利確・手仕舞い判定レポート】**\n"
-        + "\n".join(sell_notifications)
+        "📊 **【本日の売買判定レポート】**\n"
+        + "\n".join(all_action_notifs)
         + f"\n\n残りの監視対象: {len(remaining_watchlist)} 銘柄"
     )
   else:
     notification = (
         "✅ **【日次株価チェック完了】**\n"
-        f"本日、売り条件を満たした銘柄はありませんでした。\n"
+        "本日、利確・損切り条件を満たした銘柄はありませんでした。\n"
         f"・監視中銘柄数: {len(watchlist)}件 ({watchlist_str})"
     )
 
-  # 🔥 送信処理を共通化し、どちらの条件でも確実に送信する
+  # Discordへ通知送信
   send_discord(notification)
 
-  # 更新されたリストを保存（売りが出た銘柄は除外される）
+  # 更新されたリストを保存（利確・損切りされた銘柄を除外）
   with open("watchlist.json", "w", encoding="utf-8") as f:
     json.dump(remaining_watchlist, f, ensure_ascii=False, indent=2)
 
-  print("監視処理が正常に完了しました。")
+  print("監視処理および通知完了。")
 
 
 if __name__ == "__main__":
