@@ -59,7 +59,9 @@ def monitor_watchlist():
 
     except Exception as e:
       print(f'Error monitoring {ticker}: {e}')
-
+  # 4. 通知文の作成（売り対象あり/なし両対応）
+  # 🔥 ここで notification を作る前に watchlist_str を定義する
+  watchlist_str = ", ".join([f"`{t}`" for t in watchlist])
   # Discordへ通知送信
   if sell_notifications and DISCORD_WEBHOOK_URL:
     notification = '📊 **本日の利確・手仕舞い判定レポート**\n' + '\n'.join(
