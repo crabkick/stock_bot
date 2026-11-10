@@ -1,6 +1,7 @@
 import re
 import bs4
 import requests
+import os
 
 # =========================================================
 # 設定項目
