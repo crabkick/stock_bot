@@ -4,7 +4,7 @@ import pandas as pd
 import requests
 import yfinance as yf
 
-DISCORD_WEBHOOK_URL = os.environ.get('https://discord.com/api/webhooks/1569541009053065348/atvAS9slaGCq2yED1AUkpJ3lpFVK1Um1NW6CvrOkGCUQSyZif75cMOItpLchx2PoPsnT')
+DISCORD_WEBHOOK_URL = 'https://discord.com/api/webhooks/1569541009053065348/atvAS9slaGCq2yED1AUkpJ3lpFVK1Um1NW6CvrOkGCUQSyZif75cMOItpLchx2PoPsnT'
 
 
 def monitor_watchlist():
