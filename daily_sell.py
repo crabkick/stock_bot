@@ -65,6 +65,12 @@ def monitor_watchlist():
     notification = '📊 **本日の利確・手仕舞い判定レポート**\n' + '\n'.join(
         sell_notifications
     )
+  else:
+    notification = (
+        '✅ **【日次株価チェック完了】**\n'
+        f'本日、売り条件を満たした銘柄はありませんでした。\n'
+        f'・監視中銘柄数: {len(watchlist)}件 ({watchlist_str})'
+    )
     requests.post(DISCORD_WEBHOOK_URL, json={'content': notification})
 
   # 更新されたリストを保存（売りが出た銘柄は除外される）
