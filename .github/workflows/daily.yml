@@ -14,4 +14,4 @@ jobs:
         with:
           python-version: '3.10'
       - run: pip install requests beautifulsoup4
-      - run: python main.py
+      - run: python daily_eMAXIS_Slim.py
