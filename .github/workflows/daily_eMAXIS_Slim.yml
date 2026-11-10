@@ -1,5 +1,6 @@
 name: Daily eMAXIS_Slim Bot
-
+env:
+          DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }} # 🔥 これが必要！
 on:
   schedule:
     - cron: '30 23 * * *' # 日本時間 毎朝 8:30 に自動実行
