@@ -7,8 +7,7 @@ import requests
 # =========================================================
 PRINCIPAL = 44444  # 投資元本（全体）
 HOLDING_UNITS = 11671  # 保有口数（実際の保有口数）
-DISCORD_WEBHOOK_URL = "https://discord.com/api/webhooks/1569541009053065348/atvAS9slaGCq2yED1AUkpJ3lpFVK1Um1NW6CvrOkGCUQSyZif75cMOItpLchx2PoPsnT"
-
+DISCORD_WEBHOOK_URL = os.environ.get("DISCORD_WEBHOOK_URL")
 
 # =========================================================
 # 基準価額取得関数（日本版Yahoo!ファイナンスより）
