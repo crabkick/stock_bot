@@ -5,3 +5,5 @@ beautifulsoup4
 openpyxl
 lxml
 html5lib
+mplfinance
+matplotlib
