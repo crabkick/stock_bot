@@ -1,0 +1,37 @@
+name: Weekly Stock Screener
+
+on:
+  schedule:
+    # 毎週土曜日の午前 09:00 JST に実行 (UTC: 金曜日 00:00)
+    - cron: '0 0 * * 6'
+  workflow_dispatch: # 手動で即時実行したい時のボタン
+
+jobs:
+  screen:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: コードのチェックアウト
+        uses: actions/checkout@v4
+
+      - name: Python環境のセットアップ
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: ライブラリのインストール
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: 全銘柄スクリーニング＆マージ実行
+        run: |
+          python stock_buy.py
+
+      - name: watchlist.json の自動コミット＆Push
+        run: |
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
+          git add watchlist.json
+          git diff --staged --quiet || git commit -m "Auto-update watchlist with new candidates [skip ci]"
+          git push
