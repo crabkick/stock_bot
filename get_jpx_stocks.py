@@ -1,7 +1,5 @@
 from datetime import datetime
-import glob
 import io
-import os
 import urllib.parse
 from bs4 import BeautifulSoup
 import pandas as pd
@@ -11,22 +9,8 @@ PAGE_URL = 'https://www.jpx.co.jp/markets/statistics-equities/misc/01.html'
 BASE_URL = 'https://www.jpx.co.jp'
 
 
-def remove_old_csv_files():
-  """フォルダー内にある既存の japan_stocks_list_*.csv を削除する"""
-  old_files = glob.glob('japan_stocks_list_*.csv')
-  for f in old_files:
-    try:
-      os.remove(f)
-      print(f'🗑️ 古いリストファイルを削除しました: {f}')
-    except Exception as e:
-      print(f'⚠️ ファイル削除エラー ({f}): {e}')
-
-
 def get_japan_all_stocks():
   print('JPXから最新の銘柄一覧ファイルを検索中...')
-
-  # 🔥 新しいファイルを作る前に古いCSVを削除
-  remove_old_csv_files()
 
   headers = {
       'User-Agent': (
@@ -35,6 +19,7 @@ def get_japan_all_stocks():
       )
   }
 
+  # 1. 一覧ページにアクセスして最新のExcelリンクを探す
   res = requests.get(PAGE_URL, headers=headers)
   res.raise_for_status()
   soup = BeautifulSoup(res.text, 'html.parser')
@@ -59,15 +44,18 @@ def get_japan_all_stocks():
 
   print(f'最新ファイルをダウンロード中: {file_url}')
 
+  # 2. 最新ファイルをダウンロード
   excel_res = requests.get(file_url, headers=headers)
   excel_res.raise_for_status()
 
+  # 3. pandasで読み込み
   try:
     df = pd.read_excel(io.BytesIO(excel_res.content))
   except Exception:
     dfs = pd.read_html(io.BytesIO(excel_res.content))
     df = dfs[0]
 
+  # 4. データ整形
   df.columns = [str(c) for c in df.columns]
   df_stocks = df[['コード', '銘柄名', '市場・商品区分', '33業種区分']].copy()
 
@@ -78,6 +66,7 @@ def get_japan_all_stocks():
 
   df_stocks['Ticker'] = df_stocks['コード'] + '.T'
 
+  # 5. 日付入りCSVとして保存
   today_str = datetime.now().strftime('%Y%m%d')
   output_filename = f'japan_stocks_list_{today_str}.csv'
 
