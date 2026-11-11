@@ -49,7 +49,7 @@ def plot_watchlist_charts():
     print(f'[{idx}/{len(watchlist)}] {ticker} のデータを取得中...')
 
     try:
-      df = yf.download(ticker, period='6mo', progress=False)
+      df = yf.download(ticker, period='2mo', progress=False)
 
       if df.empty or len(df) < 30:
         print(f'  ⚠️ {ticker} のデータが不十分なためスキップします。')
