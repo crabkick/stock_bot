@@ -24,15 +24,15 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
-      - name: Step 1: JPXから最新銘柄リストを取得（古いCSVは削除）
+      - name: JPXから最新銘柄リストを取得（古いCSVは削除）
         run: |
           python get_jpx_stocks.py
 
-      - name: Step 2: 全銘柄スクリーニング＆既存リストへの自動マージ
+      - name: 全銘柄スクリーニング＆既存リストへの自動マージ
         run: |
           python stock_buy.py
 
-      - name: Step 3: 更新された watchlist.json を自動コミット・Push
+      - name: 更新された watchlist.json を自動コミット・Push
         run: |
           git config --local user.email "github-actions[bot]@users.noreply.github.com"
           git config --local user.name "github-actions[bot]"
