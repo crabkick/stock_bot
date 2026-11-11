@@ -64,16 +64,16 @@ def plot_watchlist_charts():
       colors = ['red' if v >= 0 else 'green' for v in df['Hist']]
 
       add_plots = [
-          mpf.makeaddplot(df['SMA20'], color='orange', width=1.0),
-          mpf.makeaddplot(
+          mpf.make_addplot(df['SMA20'], color='orange', width=1.0),
+          mpf.make_addplot(
               df['Upper_Band'], color='gray', linestyle='--', width=0.8
           ),
-          mpf.makeaddplot(
+          mpf.make_addplot(
               df['Lower_Band'], color='purple', linestyle='--', width=1.2
           ),
-          mpf.makeaddplot(df['MACD'], panel=2, color='blue', width=1.0),
-          mpf.makeaddplot(df['Signal'], panel=2, color='orange', width=1.0),
-          mpf.makeaddplot(
+          mpf.make_addplot(df['MACD'], panel=2, color='blue', width=1.0),
+          mpf.make_addplot(df['Signal'], panel=2, color='orange', width=1.0),
+          mpf.make_addplot(
               df['Hist'], type='bar', panel=2, color=colors, alpha=0.5
           ),
       ]
