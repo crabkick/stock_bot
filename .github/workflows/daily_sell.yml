@@ -7,7 +7,7 @@ on:
   schedule:
     # UTC時間で23:30 (日本時間 JST 08:30) に実行
     # 月曜〜金曜 (UTC: 日曜〜木曜 23:30)
-    - cron: '30 23 * * 0-4'
+    - cron: '15 21 * * 0-4'
   workflow_dispatch: # GitHubの画面から手動実行も可能にする設定
 
 jobs:
