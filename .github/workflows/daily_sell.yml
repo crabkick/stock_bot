@@ -4,10 +4,10 @@ env:
           DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }} # 🔥 これが必要！
 
 on:
-  schedule:
-    # UTC時間で23:30 (日本時間 JST 08:30) に実行
-    # 月曜〜金曜 (UTC: 日曜〜木曜 23:30)
-    - cron: '15 21 * * 0-4'
+  #schedule:
+    # UTC時間で23:30 (日本時間 JST 06:15) に実行
+    # 月曜〜金曜 (UTC: 日曜〜木曜 21:15)
+    #- cron: '15 21 * * 0-4'
   workflow_dispatch: # GitHubの画面から手動実行も可能にする設定
 
 jobs:
