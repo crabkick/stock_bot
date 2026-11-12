@@ -3,7 +3,7 @@ env:
           DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }} # 🔥 これが必要！
 on:
   schedule:
-    - cron: '15 23 * * *' # 日本時間 毎朝 8:30 に自動実行
+    - cron: '15 18 * * 0-4' 
   workflow_dispatch: # 手動実行ボタン
 
 jobs:
