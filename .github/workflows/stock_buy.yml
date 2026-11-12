@@ -1,9 +1,9 @@
 name: Weekly Stock Screener
 
 on:
-  schedule:
+  #schedule:
     # 毎週土曜日の午前 09:23 JST に実行 (UTC: 土曜日 00:23 / 混雑回避のため分をずらし済み)
-    - cron: '23 0 * * 6'
+    #- cron: '23 0 * * 6'
   workflow_dispatch: # 手動で即時実行ボタン
 
 permissions:
