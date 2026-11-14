@@ -6,8 +6,8 @@ import os
 # =========================================================
 # 設定項目
 # =========================================================
-PRINCIPAL = 44444  # 投資元本（全体）
-HOLDING_UNITS = 11671  # 保有口数（実際の保有口数）
+PRINCIPAL = 55555  # 投資元本（全体）
+HOLDING_UNITS = 14615  # 保有口数（実際の保有口数）
 DISCORD_WEBHOOK_URL = os.environ.get("DISCORD_WEBHOOK_URL")
 
 
